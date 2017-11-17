@@ -3,7 +3,7 @@
 
   <groupId>com.esri.hadoop</groupId>
   <artifactId>spatial-sdk-hadoop</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>2.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Spatial Framework for Hadoop</name>
@@ -18,17 +18,49 @@
 		</license>
   </licenses>
 
-	<parent>
-  	<groupId>org.sonatype.oss</groupId>
-  	<artifactId>oss-parent</artifactId>
-  	<version>7</version>
-	</parent>
+  <developers>
+    <developer>
+      <id>climbage</id>
+      <name>Michael Park</name>
+      <organization>Esri</organization>
+      <organizationUrl>http://www.esri.com</organizationUrl>
+      <roles>
+	<role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>randallwhitman</id>
+      <name>Randall Whitman</name>
+      <organization>Esri</organization>
+      <organizationUrl>http://www.esri.com</organizationUrl>
+      <roles>
+	<role>developer</role>
+      </roles>
+    </developer>
+  </developers>
 
-	<scm>
-		<connection>scm:git:git@github.com:Esri/spatial-framework-for-hadoop.git</connection>
-		<developerConnection>scm:git:git@github.com:Esri/spatial-framework-for-hadoop.git</developerConnection>
-		<url>git@github.com:Esri/spatial-framework-for-hadoop.git</url>
-	</scm>
+  <!-- parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent -->
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git@github.com:Esri/spatial-framework-for-hadoop.git</connection>
+    <developerConnection>scm:git:git@github.com:Esri/spatial-framework-for-hadoop.git</developerConnection>
+    <url>https://github.com/Esri/spatial-framework-for-hadoop</url>
+  </scm>
 
   <modules>
     <module>hive</module>
@@ -96,7 +128,7 @@
     <profile>
       <id>hadoop-2.4</id>
       <properties>
-        <hadoop.version>2.4.0</hadoop.version>
+        <hadoop.version>2.4.1</hadoop.version>
       </properties>
     </profile>
     <profile>
@@ -114,33 +146,41 @@
     <profile>
       <id>hadoop-2.7</id>
       <properties>
-        <hadoop.version>2.7.3</hadoop.version>
+        <hadoop.version>2.7.4</hadoop.version>
       </properties>
     </profile>
     <profile>
       <id>hadoop-2.8</id>
       <properties>
-        <hadoop.version>2.8.0</hadoop.version>
+        <hadoop.version>2.8.2</hadoop.version>
       </properties>
     </profile>
     <profile>
       <id>hadoop-3.0</id>
       <properties>
-        <hadoop.version>3.0.0-alpha2</hadoop.version>
+        <hadoop.version>3.0.0-beta1</hadoop.version>
       </properties>
     </profile>
 
-    <profile>  <!-- compile error on com.google.common.cache in hive module, with -Phadoop-1.x -->
-      <id>hive-.10</id>
-      <properties>
-        <hive.version>0.10.0</hive.version>
-      </properties>
-    </profile>
     <profile>
-      <id>hive-.11</id>
+      <id>hive-.11</id>  <!-- Need to build with Hive-0.12 before testing with 0.11 -->
       <properties>
         <hive.version>0.11.0</hive.version>
       </properties>
+      <!-- NEEDED with Hive-0.11  dependencies>
+	<dependency>
+	  <groupId>javax.jdo</groupId>
+	  <artifactId>jdo2-api</artifactId>
+	  <version>2.3-ec</version>
+	</dependency>
+      </dependencies>
+      <repositories>
+	<repository>
+	  <id>org.datanucleus</id>
+	  <name>datanucleus</name>
+	  <url>http://www.datanucleus.org/downloads/maven2/</url>
+	</repository>
+      </repositories -->
     </profile>
     <profile>
       <id>hive-.12</id>
@@ -213,6 +253,45 @@
         <hive.version>2.1.1</hive.version>
       </properties>
     </profile>
+    <profile>
+      <id>hive-2.2</id>
+      <properties>
+        <hive.version>2.2.0</hive.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>hive-2.3</id>
+      <properties>
+        <hive.version>2.3.1</hive.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-gpg-plugin</artifactId>
+	    <executions>
+	      <execution>
+		<id>sign-artifacts</id>
+		<phase>verify</phase>
+		<goals>
+		  <goal>sign</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
 
   </profiles>
 
@@ -225,33 +304,20 @@
     <!-- Versions for dependencies -->
     <hadoop.version>2.2.0</hadoop.version>
     <hive.version>0.12.0</hive.version>
-    <jackson.version>1.8.8</jackson.version>
+    <jackson.version>2.6.5</jackson.version>
     <logging.version>1.1.3</logging.version>
-    <geometry.version>1.2</geometry.version>
+    <geometry.version>2.0.0</geometry.version>
     <junit.version>4.11</junit.version>
 
     <!-- Versions for plugins -->
     <compiler.plugin.version>2.3.2</compiler.plugin.version>
     <surefire.plugin.version>2.12</surefire.plugin.version>
-    <javadoc.plugin.version>2.8</javadoc.plugin.version>
+    <source.plugin.version>2.2.1</source.plugin.version>
+    <javadoc.plugin.version>2.9.1</javadoc.plugin.version>
   </properties>
-
-	<repositories>
-		<repository>
-			<id>org.datanucleus</id>
-			<name>datanucleus</name>
-			<url>http://www.datanucleus.org/downloads/maven2/</url>
-		</repository>
-	</repositories>
 
   <dependencyManagement>
     <dependencies>
-
-	  	<dependency>
-				<groupId>javax.jdo</groupId>
-				<artifactId>jdo2-api</artifactId>
-				<version>2.3-ec</version>
-	  	</dependency>
 
       <dependency>
         <groupId>org.apache.hadoop</groupId>
@@ -275,15 +341,15 @@
       </dependency>
 
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-core-asl</artifactId>
-        <version>${jackson.version}</version>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-core</artifactId>
+	<version>${jackson.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-mapper-asl</artifactId>
-        <version>${jackson.version}</version>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<version>${jackson.version}</version>
       </dependency>
 
       <dependency>
@@ -328,6 +394,19 @@
             <argLine>-Xmx1024m</argLine>
           </configuration>
         </plugin>
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-source-plugin</artifactId>
+	  <version>${source.plugin.version}</version>
+	  <executions>
+	    <execution>
+	      <id>attach-sources</id>
+	      <goals>
+		<goal>jar-no-fork</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	</plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -344,6 +423,18 @@
             </execution>
           </executions>
         </plugin>
+	<plugin>
+	  <groupId>org.sonatype.plugins</groupId>
+	  <artifactId>nexus-staging-maven-plugin</artifactId>
+	  <version>1.6.7</version>
+	  <extensions>true</extensions>
+	  <configuration>
+	    <serverId>ossrh</serverId>
+	    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+	  </configuration>
+	</plugin>
+
       </plugins>
     </pluginManagement>
   </build>
